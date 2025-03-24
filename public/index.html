@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Battle</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- Modern typography with Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">Prompt Battle</div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link active" data-page="upload">Upload</a></li>
+                    <li><a href="#" class="nav-link" data-page="vote">Vote</a></li>
+                    <li><a href="#" class="nav-link" data-page="admin">Admin</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Upload Page -->
+            <section id="upload-page" class="page active">
+                <div class="page-content">
+                    <h1 class="page-title">Upload Your Creation</h1>
+                    <p class="page-description">Battle your AI-generated images against others. Upload your best creation and let the community decide the winner.</p>
+                    
+                    <div class="upload-container">
+                        <div class="upload-form">
+                            <h3>Upload Your Image</h3>
+                            <p class="upload-info">Upload your AI-generated image. Maximum of 2 images allowed in the battle.</p>
+                            <form id="upload-form" class="upload-form-inner">
+                                <div class="form-group">
+                                    <label for="prompter-name">Your Name</label>
+                                    <input type="text" id="prompter-name" name="prompter" required placeholder="Enter your name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prompter-image">Your Image</label>
+                                    <div class="file-input-container">
+                                        <input type="file" id="prompter-image" name="image" accept="image/*" required>
+                                        <div class="file-preview" id="preview">
+                                            <div class="file-preview-placeholder">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                                </svg>
+                                                <span>Click to select image</span>
+                                            </div>
+                                            <img class="preview-img" src="" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                    Upload Image
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="uploaded-images">
+                            <h3>Uploaded Images</h3>
+                            <div id="uploaded-images-container" class="uploaded-images-container">
+                                <div class="empty-state">
+                                    <p>No images uploaded yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gallery Page removed as requested -->
+
+            <!-- Vote Page -->
+            <section id="vote-page" class="page">
+                <div class="page-content">
+                    <h1 class="page-title">Vote for the Best</h1>
+                    <p class="page-description">Which prompt creation do you think is better? Cast your vote and see the results.</p>
+                    
+                    <div class="vote-container" id="vote-container">
+                        <div class="empty-state">
+                            <p>No images to vote on yet</p>
+                            <a href="#" class="btn btn-secondary" data-page="upload">Upload Images</a>
+                        </div>
+                    </div>
+                    
+                    <div class="vote-results" id="vote-results">
+                        <h3>Current Results</h3>
+                        <div class="results-container" id="results-container"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Admin Page -->
+            <section id="admin-page" class="page">
+                <div class="page-content">
+                    <h1 class="page-title">Admin Panel</h1>
+                    <p class="page-description">Manage uploaded images and moderate content.</p>
+                    
+                    <div id="admin-login-container">
+                        <div class="admin-login-form">
+                            <h3>Admin Login</h3>
+                            <form id="admin-login-form">
+                                <div class="form-group">
+                                    <label for="admin-password">Password</label>
+                                    <input type="password" id="admin-password" required placeholder="Enter admin password">
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                        <polyline points="10 17 15 12 10 7"></polyline>
+                                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                                    </svg>
+                                    Login
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div id="admin-content" style="display: none;">
+                        <div class="admin-container" id="admin-container">
+                            <div class="empty-state">
+                                <p>No images to manage</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Prompt Battle &copy; 2025</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <span class="toast-message">Message here</span>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
