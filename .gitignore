@@ -44,3 +44,4 @@ Thumbs.db
 
 # Do not commit images
 ./public/uploads/*
+./public/votes.json
