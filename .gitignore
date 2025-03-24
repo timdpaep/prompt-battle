@@ -41,3 +41,6 @@ Thumbs.db
 .npm/
 .eslintcache
 .cache/
+
+# Do not commit images
+./public/uploads/*
