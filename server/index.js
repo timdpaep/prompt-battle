@@ -71,6 +71,9 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
     // Store prompter number if provided
     const prompterNumber = req.body.prompterNumber || null;
     
+    // Get the prompt text if provided
+    const prompt = req.body.prompt || '';
+    
     const imageUrl = `/uploads/${req.file.filename}`;
     
     // Add image to votes.json
@@ -91,6 +94,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
       id: req.file.filename,
       prompter: prompter,
       prompterNumber: prompterNumber, // Add prompter number to stored data
+      prompt: prompt, // Store the prompt text
       url: imageUrl,
       votes: 0
     });
@@ -103,6 +107,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
         id: req.file.filename,
         prompter: prompter,
         prompterNumber: prompterNumber,
+        prompt: prompt,
         url: imageUrl
       }
     });

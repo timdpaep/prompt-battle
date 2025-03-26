@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prompt Battle - Fullscreen View</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <!-- Modern typography with Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Fullscreen specific styles */
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .fullscreen-container {
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+        background-color: var(--background);
+      }
+
+      .fullscreen-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem;
+        position: relative;
+      }
+
+      .fullscreen-image-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        margin-bottom: 1rem;
+      }
+
+      .fullscreen-image {
+        max-width: 100%;
+        max-height: 80vh;
+        object-fit: contain;
+      }
+
+      .fullscreen-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background-color: var(--background);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+      }
+
+      .fullscreen-prompter {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--foreground);
+      }
+
+      .fullscreen-votes {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .fullscreen-placeholder {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 80vh;
+        background-color: var(--gray-100);
+        border-radius: var(--radius-md);
+        color: var(--gray-500);
+      }
+
+      .fullscreen-placeholder svg {
+        width: 64px;
+        height: 64px;
+        stroke: var(--gray-400);
+        margin-bottom: 1rem;
+      }
+
+      .back-button {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        z-index: 10;
+        padding: 0.5rem 1rem;
+        background-color: var(--background);
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        color: var(--gray-700);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .back-button:hover {
+        background-color: var(--gray-100);
+        color: var(--foreground);
+      }
+
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        color: var(--gray-500);
+        font-size: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="fullscreen-container" id="fullscreen-container">
+      <a href="/index.html#admin" class="back-button">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Admin
+      </a>
+
+      <button class="toggle-prompts-btn" id="toggle-prompts-btn">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="toggle-text">Hide Prompts</span>
+      </button>
+
+      <div class="empty-state" id="empty-state">
+        <p>No images to display</p>
+      </div>
+    </div>
+
+    <script>
+      // DOM Elements
+      const fullscreenContainer = document.getElementById(
+        "fullscreen-container"
+      );
+      const emptyState = document.getElementById("empty-state");
+      const togglePromptsBtn = document.getElementById("toggle-prompts-btn");
+      const toggleText = document.getElementById("toggle-text");
+
+      // State
+      let promptsVisible = true;
+
+      // Update interval
+      let updateInterval = null;
+
+      // Load fullscreen content
+      function loadFullscreenContent() {
+        fetch("/api/images")
+          .then((response) => response.json())
+          .then((images) => {
+            renderFullscreenContent(images);
+          })
+          .catch((error) => {
+            console.error("Error loading images for fullscreen:", error);
+          });
+      }
+
+      // Render fullscreen content
+      function renderFullscreenContent(images) {
+        if (images.length === 0) {
+          emptyState.style.display = "flex";
+          return;
+        }
+
+        emptyState.style.display = "none";
+
+        // Clear previous content except the back button
+        const backButton = fullscreenContainer.querySelector(".back-button");
+        fullscreenContainer.innerHTML = "";
+        fullscreenContainer.appendChild(backButton);
+
+        images.forEach((image) => {
+          const fullscreenItem = document.createElement("div");
+          fullscreenItem.className = "fullscreen-item";
+
+          if (image.url || image.path) {
+            fullscreenItem.innerHTML = `
+                        <div class="fullscreen-image-container">
+                            <img src="${image.url || image.path}" alt="${
+              image.prompter
+            }'s image" class="fullscreen-image">
+                        </div>
+                        <div class="fullscreen-info">
+                            <div class="fullscreen-prompter">${
+                              image.prompter
+                            }</div>
+                            <div class="fullscreen-votes">Votes: ${
+                              image.votes || 0
+                            }</div>
+                        </div>
+                        ${
+                          image.prompt
+                            ? `<div class="prompt-text fullscreen-prompt">${image.prompt}</div>`
+                            : ""
+                        }
+                    `;
+          } else {
+            fullscreenItem.innerHTML = `
+                        <div class="fullscreen-placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <span>No image available</span>
+                        </div>
+                        <div class="fullscreen-info">
+                            <div class="fullscreen-prompter">${
+                              image.prompter
+                            }</div>
+                            <div class="fullscreen-votes">Votes: ${
+                              image.votes || 0
+                            }</div>
+                        </div>
+                        ${
+                          image.prompt
+                            ? `<div class="prompt-text fullscreen-prompt">
+                                <span class="prompt-label">Prompt:</span>
+                                ${image.prompt}
+                            </div>`
+                            : ""
+                        }
+                    `;
+          }
+
+          fullscreenContainer.appendChild(fullscreenItem);
+        });
+      }
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", () => {
+        loadFullscreenContent();
+
+        // Set up toggle button for prompts
+        togglePromptsBtn.addEventListener("click", () => {
+          promptsVisible = !promptsVisible;
+          toggleText.textContent = promptsVisible
+            ? "Hide Prompts"
+            : "Show Prompts";
+
+          // Toggle visibility of all prompt elements
+          const promptElements =
+            document.querySelectorAll(".fullscreen-prompt");
+          promptElements.forEach((element) => {
+            if (promptsVisible) {
+              element.classList.remove("prompt-hidden");
+            } else {
+              element.classList.add("prompt-hidden");
+            }
+          });
+        });
+
+        // Set up interval for live updates
+        updateInterval = setInterval(() => {
+          loadFullscreenContent();
+        }, 2000); // Update every 2 seconds for more responsive real-time updates
+      });
+
+      // Clean up interval when leaving the page
+      window.addEventListener("beforeunload", () => {
+        if (updateInterval) {
+          clearInterval(updateInterval);
+        }
+      });
+    </script>
+  </body>
+</html>
